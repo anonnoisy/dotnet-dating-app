@@ -1,5 +1,7 @@
 using System.Net;
 using System.Text;
+using AspNetCore.RouteAnalyzer;
+using AutoMapper;
 using DatingApp.API.Data;
 using DatingApp.API.Data.interfaces;
 using DatingApp.API.Data.Interfaces;
@@ -10,6 +12,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,8 +37,11 @@ namespace DatingApp.API
                 connection.UseSqlite(Configuration.GetConnectionString("DefaultConnection"))
             );
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options => 
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            );
             services.AddCors();
+            services.AddAutoMapper(typeof(DatingRepository).Assembly);
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IDatingRepository, DatingRepository>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -74,8 +80,6 @@ namespace DatingApp.API
             app.UseCors(cors => cors.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             app.UseAuthentication();
-
-            // app.UseHttpsRedirection();
 
             app.UseRouting();
 

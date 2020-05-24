@@ -11,7 +11,7 @@ namespace DatingApp.API.Data.Repositories
         private readonly DataContext _context;
         public DatingRepository(DataContext context)
         {
-            this._context = context;
+            _context = context;
         }
 
         public void Add<T>(T entity) where T : class
@@ -26,7 +26,7 @@ namespace DatingApp.API.Data.Repositories
 
         public async Task<User> GetUser(int id)
         {
-            var user = await _context.Users.Include(photo => photo.Photos)
+            var user = await _context.Users.Include(p => p.Photos)
                 .FirstOrDefaultAsync(user => user.Id == id);
 
             return user;
@@ -34,7 +34,7 @@ namespace DatingApp.API.Data.Repositories
 
         public async Task<IEnumerable<User>> GetUsers()
         {
-            var users = await _context.Users.Include(photo => photo.Photos)
+            var users = await _context.Users.Include(p => p.Photos)
                 .ToListAsync();
 
             return users;
